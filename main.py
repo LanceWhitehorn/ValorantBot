@@ -87,7 +87,7 @@ async def play(ctx, url : str):
         await ctx.send("Wait for the current playing music to end or use the 'stop' command")
         return
 
-    voiceChannel = discord.utils.get(ctx.guild.voice_channels, name='bot-voice')
+    voiceChannel = discord.utils.get(ctx.guild.voice_channels, name='comms')
     try:
         await voiceChannel.connect()
     except:
