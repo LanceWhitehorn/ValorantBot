@@ -79,8 +79,8 @@ async def roles(ctx):
 #     Music     #
 #################  
       
-@client.command()
-async def play(ctx, url : str, help='Play song (only accepts YouTube URLs atm)'):
+@client.command(help='Play song (only accepts YouTube URLs atm)')
+async def play(ctx, url : str):
     song_there = os.path.isfile("song.mp3")
     try:
         if song_there:
@@ -111,32 +111,32 @@ async def play(ctx, url : str, help='Play song (only accepts YouTube URLs atm)')
             os.rename(file, "song.mp3")
     voice.play(discord.FFmpegPCMAudio("song.mp3"))
 
-@client.command()
-async def leave(ctx, help='Disconnect ValorantBot from vc'):
+@client.command(help='Disconnect ValorantBot from vc')
+async def leave(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice.is_connected():
         await voice.disconnect()
     else:
         await ctx.send("The bot is not connected to a voice channel.")
 
-@client.command()
-async def pause(ctx, help='Pause the current song'):
+@client.command(help='Pause the current song')
+async def pause(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice.is_playing():
         voice.pause()
     else:
         await ctx.send("Currently no audio is playing.")
 
-@client.command()
-async def resume(ctx, help='Resume the current song'):
+@client.command(help='Resume the current song')
+async def resume(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice.is_paused():
         voice.resume()
     else:
         await ctx.send("The audio is not paused.")
 
-@client.command()
-async def stop(ctx, help='Stop the song'):
+@client.command(help='Stop the song')
+async def stop(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     voice.stop()
     
