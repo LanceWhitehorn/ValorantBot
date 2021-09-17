@@ -14,22 +14,6 @@ intents.members = True
 
 client = commands.Bot(command_prefix='!', intents=intents)
 
-################
-#     Help     #
-################
-
-help_command = commands.DefaultHelpCommand(
-    no_category = 'Commands'
-)
-
-@client.command(
-    help = 'Shows this message',
-    leave = 'Disconnects ValorantBot from vc',
-    pause = 'Pause the current song',
-    play = 'Play the song (only accepts YouTube URLs atm)',
-    resume = 'Resume the current song',
-    stop = 'Stop all songs'
-)
 
 #########################
 #     Role Reaction     #
@@ -96,7 +80,7 @@ async def roles(ctx):
 #################  
       
 @client.command()
-async def play(ctx, url : str):
+async def play(ctx, url : str, help='Play song (only accepts YouTube URLs atm)'):
     song_there = os.path.isfile("song.mp3")
     try:
         if song_there:
@@ -128,7 +112,7 @@ async def play(ctx, url : str):
     voice.play(discord.FFmpegPCMAudio("song.mp3"))
 
 @client.command()
-async def leave(ctx):
+async def leave(ctx, help='Disconnect ValorantBot from vc'):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice.is_connected():
         await voice.disconnect()
@@ -136,7 +120,7 @@ async def leave(ctx):
         await ctx.send("The bot is not connected to a voice channel.")
 
 @client.command()
-async def pause(ctx):
+async def pause(ctx, help='Pause the current song'):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice.is_playing():
         voice.pause()
@@ -144,7 +128,7 @@ async def pause(ctx):
         await ctx.send("Currently no audio is playing.")
 
 @client.command()
-async def resume(ctx):
+async def resume(ctx, help='Resume the current song'):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice.is_paused():
         voice.resume()
@@ -152,19 +136,16 @@ async def resume(ctx):
         await ctx.send("The audio is not paused.")
 
 @client.command()
-async def stop(ctx):
+async def stop(ctx, help='Stop the song'):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     voice.stop()
-
     
-#################
-#     Hello     #    
-#################
+client.run(TOKEN)
 
-@client.command()
-async def hello(ctx):
-    await ctx.send('Hello')
-    
+#####################
+#     Workspace     #
+#####################
+
 #@client.event
 #async def on_command_error(ctx  , error):
 #    if isinstance(error, commands.CommandNotFound):
@@ -175,5 +156,3 @@ async def hello(ctx):
 #    print(f'{client.user.name} has disconnected')
 #    await ctx.send(f'{client.user.name} has disconnected')
 #    await client.close()
-
-client.run(TOKEN)
