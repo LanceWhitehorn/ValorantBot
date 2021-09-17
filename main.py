@@ -14,6 +14,23 @@ intents.members = True
 
 client = commands.Bot(command_prefix='!', intents=intents)
 
+################
+#     Help     #
+################
+
+help_command = commands.DefaultHelpCommand(
+    no_category = 'Commands'
+)
+
+@client.command(
+    help = 'Shows this message'
+    leave = 'Disconnects ValorantBot from vc' 
+    pause = 'Pause the current song'
+    play = 'Play the song (only accepts YouTube URLs atm)'
+    resume = 'Resume the current song'
+    stop = 'Stop all songs'
+)
+
 #########################
 #     Role Reaction     #
 #########################
@@ -72,6 +89,7 @@ async def roles(ctx):
     for agent in emojis:
         emoji = discord.utils.get(guild.emojis, name=agent)
         await message.add_reaction(emoji)
+
 
 #################
 #     Music     #
@@ -137,6 +155,11 @@ async def resume(ctx):
 async def stop(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     voice.stop()
+
+    
+#################
+#     Hello     #    
+#################
 
 @client.command()
 async def hello(ctx):
