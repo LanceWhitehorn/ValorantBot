@@ -19,7 +19,7 @@ async def on_ready():
 @client.event
 async def on_member_join(member):
     print(f'{member.name} has joined the server!')
-    await member.send(f'Hi {member.name}, welcome to my Discord server!')
+    await member.send(f'Hi {member.name}, <#887372328143552572> to our friendly Valorant server!')
     
 @client.event
 async def on_raw_reaction_add(payload):
