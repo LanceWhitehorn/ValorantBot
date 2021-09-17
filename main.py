@@ -23,11 +23,11 @@ help_command = commands.DefaultHelpCommand(
 )
 
 @client.command(
-    help = 'Shows this message'
-    leave = 'Disconnects ValorantBot from vc' 
-    pause = 'Pause the current song'
-    play = 'Play the song (only accepts YouTube URLs atm)'
-    resume = 'Resume the current song'
+    help = 'Shows this message',
+    leave = 'Disconnects ValorantBot from vc',
+    pause = 'Pause the current song',
+    play = 'Play the song (only accepts YouTube URLs atm)',
+    resume = 'Resume the current song',
     stop = 'Stop all songs'
 )
 
