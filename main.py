@@ -64,7 +64,8 @@ async def on_raw_reaction_remove(payload):
                 print(f'{member.name} not found')
         else:
             print('Role not found')
-            
+
+@commands.has_role('Admin')            
 @client.command()
 async def roles(ctx):
     message = await ctx.fetch_message('888372589116928060')
