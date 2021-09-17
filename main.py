@@ -66,7 +66,7 @@ async def on_raw_reaction_remove(payload):
             print('Role not found')
 
 @commands.has_role('Admin')            
-@client.command()
+@client.command(hidden=True)
 async def roles(ctx):
     message = await ctx.fetch_message('888372589116928060')
     emojis = ['astra', 'breach', 'brimstone', 'cypher', 'jett', 'kayo', 'killjoy', 'omen', 'phoenix', 'raze', 'reyna', 'sage', 'skye', 'sova', 'viper', 'yoru']
