@@ -58,11 +58,6 @@ async def on_raw_reaction_remove(payload):
         else:
             print('Role not found')
             
-#@client.event
-#async def on_command_error(ctx  , error):
-    #if isinstance(error, commands.CommandNotFound):
-        #print(error)
-        
 @client.command()
 async def roles(ctx):
     message = await ctx.fetch_message('888372589116928060')
@@ -75,11 +70,16 @@ async def roles(ctx):
 @client.command()
 async def hello(ctx):
     await ctx.send('Hello')
+    
+#@client.event
+#async def on_command_error(ctx  , error):
+#    if isinstance(error, commands.CommandNotFound):
+#        print(error)
 
-@client.command(aliases=['q'])
-async def quit(ctx):
-    print(f'{client.user.name} has disconnected')
-    await ctx.send(f'{client.user.name} has disconnected')
-    await client.close()
+#@client.command(aliases=['q'])
+#async def quit(ctx):
+#    print(f'{client.user.name} has disconnected')
+#    await ctx.send(f'{client.user.name} has disconnected')
+#    await client.close()
 
 client.run(TOKEN)
