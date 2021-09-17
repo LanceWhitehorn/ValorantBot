@@ -33,11 +33,11 @@ async def on_raw_reaction_add(payload):
             if member is not None:
                 if member.id != 835802124117475348:
                     await member.add_roles(role)
-                    print('Member added to', role_name)
+                    print(f'{member.name}  added to', role_name)
                 else:
                     print('ValorantBot reaction for', role_name)
             else:
-                print('Member not found')
+                print(f'{member.name}  not found')
         else:
             print('Role not found')
 
@@ -52,9 +52,9 @@ async def on_raw_reaction_remove(payload):
             member = discord.utils.find(lambda m: m.id==payload.user_id, guild.members)
             if member is not None:
                 await member.remove_roles(role)
-                print('Member removed from', role_name)
+                print(f'{member.name} removed from', role_name)
             else:
-                print('Member not found')
+                print(f'{member.name} not found')
         else:
             print('Role not found')
             
