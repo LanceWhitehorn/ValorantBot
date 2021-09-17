@@ -24,15 +24,18 @@ async def on_member_join(member):
 @client.event
 async def on_raw_reaction_add(payload):
     message_id = payload.message_id
-    if message_id == 888331814471602207:
+    if message_id == 888372589116928060:
         guild = discord.utils.find(lambda g: g.id==payload.guild_id, client.guilds)
         role_name = payload.emoji.name.capitalize()
         role = discord.utils.get(guild.roles, name=role_name)    
         if role is not None:
             member = discord.utils.find(lambda m: m.id==payload.user_id, guild.members)
             if member is not None:
-                await member.add_roles(role)
-                print('Member added to', role_name)
+                if member.id != 835802124117475348:
+                    await member.add_roles(role)
+                    print('Member added to', role_name)
+                else:
+                    print('ValorantBot reaction for', role_name)
             else:
                 print('Member not found')
         else:
@@ -41,7 +44,7 @@ async def on_raw_reaction_add(payload):
 @client.event
 async def on_raw_reaction_remove(payload):
     message_id = payload.message_id
-    if message_id == 888331814471602207:
+    if message_id == 888372589116928060:
         guild = discord.utils.find(lambda g: g.id==payload.guild_id, client.guilds)
         role_name = payload.emoji.name.capitalize()
         role = discord.utils.get(guild.roles, name=role_name)    
@@ -55,10 +58,19 @@ async def on_raw_reaction_remove(payload):
         else:
             print('Role not found')
             
-@client.event
-async def on_command_error(ctx  , error):
-    if isinstance(error, commands.CommandNotFound):
-        print(error)
+#@client.event
+#async def on_command_error(ctx  , error):
+    #if isinstance(error, commands.CommandNotFound):
+        #print(error)
+        
+@client.command()
+async def roles(ctx):
+    message = await ctx.fetch_message('888372589116928060')
+    emojis = ['astra', 'breach', 'brimstone', 'cypher', 'jett', 'kayo', 'killjoy', 'omen', 'phoenix', 'raze', 'reyna', 'sage', 'skye', 'sova', 'viper', 'yoru']
+    guild = discord.utils.find(lambda g: g.id==ctx.guild.id, client.guilds)
+    for agent in emojis:
+        emoji = discord.utils.get(guild.emojis, name=agent)
+        await message.add_reaction(emoji)
 
 @client.command()
 async def hello(ctx):
