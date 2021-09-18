@@ -76,6 +76,23 @@ async def roles(ctx):
         await message.add_reaction(emoji)
 
 
+##########################
+#     Agent Roulette     #
+##########################
+
+@client.command(aliases=['r'])
+async def roulette(ctx, number:int):
+    agents = ['astra', 'breach', 'brimstone', 'cypher', 'jett', 'kayo', 'killjoy', 'omen', 'phoenix', 'raze', 'reyna', 'sage', 'skye', 'sova', 'viper', 'yoru']
+    chosen = []
+    for i in range(0, number):
+        idx = random.randint(0, 15)
+        chosen.append(agents[idx].capitalize())
+    desc = ', '.join(chosen)
+    embed = discord.Embed(title='Agents', description=desc, color=0xF4F4F4)
+    await ctx.send(embed=embed)
+#   await ctx.send('Agent(s): ' + desc)
+
+
 #################
 #     Music     #
 #################  
@@ -142,6 +159,7 @@ async def stop(ctx):
     voice.stop()
     
 client.run(TOKEN)
+
 
 #####################
 #     Workspace     #
