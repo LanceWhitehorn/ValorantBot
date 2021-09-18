@@ -67,7 +67,7 @@ async def on_raw_reaction_remove(payload):
 
 @commands.has_role('Admin')            
 @client.command(hidden=True)
-async def roles(ctx):
+async def agentSelect(ctx):
     message = await ctx.fetch_message('888372589116928060')
     emojis = ['astra', 'breach', 'brimstone', 'cypher', 'jett', 'kayo', 'killjoy', 'omen', 'phoenix', 'raze', 'reyna', 'sage', 'skye', 'sova', 'viper', 'yoru']
     guild = discord.utils.find(lambda g: g.id==ctx.guild.id, client.guilds)
@@ -80,8 +80,8 @@ async def roles(ctx):
 #     Agent Roulette     #
 ##########################
 
-@client.command(aliases=['r'], help='(Takes an integer n) Randomly selects n agents')
-async def roulette(ctx, number:int):
+@client.command(aliases=['r'], help='(Takes an integer n, default n=1) Randomly selects n agents')
+async def roulette(ctx, number:int=1):
     if number <= 5:
         agents = ['astra', 'breach', 'brimstone', 'cypher', 'jett', 'kayo', 'killjoy', 'omen', 'phoenix', 'raze', 'reyna', 'sage', 'skye', 'sova', 'viper', 'yoru']
         chosen = []
@@ -91,11 +91,29 @@ async def roulette(ctx, number:int):
             if agent not in chosen:
                 chosen.append(agent)
         desc = ', '.join(chosen)
-        embed = discord.Embed(title='Agents', description=desc, color=0xF4F4F4)
+        embed = discord.Embed(title='Agent Roulette', description=desc, color=0xF4F4F4)
         await ctx.send(embed=embed)
 #       await ctx.send('Agent(s): ' + desc)
     else:
         await ctx.send('You can\'t select more than 5 agents!')
+
+
+############################
+#     Agent Main Users     #
+############################
+
+@client.command(help='Lists users that main the specified agent')
+async def mains(ctx, agent:str):
+    agent = agent.capitalize()
+    guild = discord.utils.find(lambda g: g.id==ctx.guild.id, client.guilds)
+    role = discord.utils.get(guild.roles, name=agent)
+    users = []
+    for member in guild.members:
+        if role in member.roles:
+            users.append(member.name)
+    desc = ', '.join(users)
+    embed = discord.Embed(title=agent+' Mains', description=desc, color=0xF4F4F4)
+    await ctx.send(embed=embed)
 
 
 #################
