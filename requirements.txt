@@ -8,6 +8,8 @@ colorlog==6.4.1
 discord==1.7.3
 discord-py-slash-command==3.0.1
 discord.py==1.7.3
+ffmpeg==1.4
+ffprobe==0.5
 future==0.18.2
 idna==3.2
 multidict==4.7.6
