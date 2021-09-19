@@ -29,7 +29,7 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 intents = discord.Intents.default()
 intents.members = True
 
-client = commands.Bot(command_prefix='/', intents=intents)
+client = commands.Bot(command_prefix='!', intents=intents)
 slash = SlashCommand(client)
 
 
@@ -57,7 +57,7 @@ async def on_member_remove(member):
 #######################
 #     Squad Lobby     #
 #######################
-    
+
 @client.command(aliases=['s'], help='Creates a virtual lobby which people can join and leave')
 async def squad(ctx:SlashContext):
     id1 = str(uuid.uuid1())
@@ -184,14 +184,14 @@ async def mains(ctx, agent:str):
 #     Music     #
 #################  
       
-@client.command(help='Play song (only accepts YouTube URLs atm)')
+@client.command(aliases=['p'], help='Play song (only accepts YouTube URLs atm)')
 async def play(ctx, url : str):
-    song_there = os.path.isfile("song.mp3")
+    song_there = os.path.isfile('song.mp3')
     try:
         if song_there:
-            os.remove("song.mp3")
+            os.remove('song.mp3')
     except PermissionError:
-        await ctx.send("Wait for the current playing music to end or use the 'stop' command")
+        await ctx.send('Wait for the current playing music to end or use the \'stop\' command')
         return
 
     voiceChannel = discord.utils.get(ctx.guild.voice_channels, name='comms')
@@ -211,10 +211,10 @@ async def play(ctx, url : str):
     }
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
-    for file in os.listdir("./"):
-        if file.endswith(".mp3"):
-            os.rename(file, "song.mp3")
-    voice.play(discord.FFmpegPCMAudio("song.mp3"))
+    for file in os.listdir('./'):
+        if file.endswith('.mp3'):
+            os.rename(file, 'song.mp3')
+    voice.play(discord.FFmpegPCMAudio('song.mp3'))
 
 @client.command(help='Disconnect ValorantBot from vc')
 async def leave(ctx):
@@ -222,7 +222,7 @@ async def leave(ctx):
     if voice.is_connected():
         await voice.disconnect()
     else:
-        await ctx.send("The bot is not connected to a voice channel.")
+        await ctx.send('The bot is not connected to a voice channel.')
 
 @client.command(help='Pause the current song')
 async def pause(ctx):
@@ -230,7 +230,7 @@ async def pause(ctx):
     if voice.is_playing():
         voice.pause()
     else:
-        await ctx.send("Currently no audio is playing.")
+        await ctx.send('Currently no audio is playing.')
 
 @client.command(help='Resume the current song')
 async def resume(ctx):
@@ -238,7 +238,7 @@ async def resume(ctx):
     if voice.is_paused():
         voice.resume()
     else:
-        await ctx.send("The audio is not paused.")
+        await ctx.send('The audio is not paused.')
 
 @client.command(help='Stop the song')
 async def stop(ctx):
