@@ -246,19 +246,3 @@ async def stop(ctx):
     voice.stop()
     
 client.run(TOKEN)
-
-
-#####################
-#     Workspace     #
-#####################
-
-#@client.event
-#async def on_command_error(ctx  , error):
-#    if isinstance(error, commands.CommandNotFound):
-#        print(error)
-
-#@client.command(aliases=['q'])
-#async def quit(ctx):
-#    print(f'{client.user.name} has disconnected')
-#    await ctx.send(f'{client.user.name} has disconnected')
-#    await client.close()
