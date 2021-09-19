@@ -45,7 +45,7 @@ async def on_ready():
 async def on_member_join(member):
     channel = client.get_channel(889161628195631114)
     curr_time = datetime.datetime.now(pytz.timezone('Australia/Sydney'))
-    await channel.send(f'{member} has joined the server at ')
+    await channel.send(f'{curr_time} - {member} has joined the server')
     await member.send(f'Hi {member.name}, <#887372328143552572> to our friendly Valorant server!')
 
 async def on_member_remove(member):
@@ -95,7 +95,7 @@ async def on_raw_reaction_add(payload):
     message_id = payload.message_id
     channel = client.get_channel(889161628195631114)
     curr_time = datetime.datetime.now(pytz.timezone('Australia/Sydney'))
-    if message_id == 888767336218238977:
+    if message_id == 888372589116928060:
         guild = discord.utils.find(lambda g: g.id==payload.guild_id, client.guilds)
         role_name = payload.emoji.name.capitalize()
         role = discord.utils.get(guild.roles, name=role_name)    
@@ -115,7 +115,7 @@ async def on_raw_reaction_remove(payload):
     message_id = payload.message_id
     channel = client.get_channel(889161628195631114)
     curr_time = datetime.datetime.now(pytz.timezone('Australia/Sydney'))
-    if message_id == 888767336218238977:
+    if message_id == 888372589116928060:
         guild = discord.utils.find(lambda g: g.id==payload.guild_id, client.guilds)
         role_name = payload.emoji.name.capitalize()
         role = discord.utils.get(guild.roles, name=role_name)    
