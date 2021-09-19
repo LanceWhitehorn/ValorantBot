@@ -3,6 +3,8 @@ import os
 import random
 import youtube_dl
 import uuid
+import datetime
+import pytz
 from discord.ext import commands
 from dotenv import load_dotenv
 
@@ -27,14 +29,35 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 intents = discord.Intents.default()
 intents.members = True
 
-client = commands.Bot(command_prefix='!', intents=intents)
+client = commands.Bot(command_prefix='/', intents=intents)
 slash = SlashCommand(client)
+
+
+##################
+#     Events     #
+##################
+
+@client.event
+async def on_ready():
+    print(f'{client.user.name} has connected to Discord!')
+
+@client.event
+async def on_member_join(member):
+    channel = client.get_channel(889161628195631114)
+    curr_time = datetime.datetime.now(pytz.timezone('Australia/Sydney'))
+    await channel.send(f'{member} has joined the server at ')
+    await member.send(f'Hi {member.name}, <#887372328143552572> to our friendly Valorant server!')
+
+async def on_member_remove(member):
+    channel = client.get_channel(889161628195631114)
+    curr_time = datetime.datetime.now(pytz.timezone('Australia/Sydney'))
+    await channel.send(str(curr_time) + f' - {member} has left the server')
 
 
 #######################
 #     Squad Lobby     #
 #######################
-
+    
 @client.command(aliases=['s'], help='Creates a virtual lobby which people can join and leave')
 async def squad(ctx:SlashContext):
     id1 = str(uuid.uuid1())
@@ -46,7 +69,6 @@ async def squad(ctx:SlashContext):
     action_row = create_actionrow(*buttons)
     embed = discord.Embed(title='Squad', description=f'{ctx.author.name}', color=0xF4F4F4)
     message = await ctx.send(embed=embed)
-    print(message.id)
     await ctx.send('Options:', components=[action_row])
     temp = [ctx.author.name]
     while len(temp) <= 5:
@@ -69,18 +91,11 @@ async def squad(ctx:SlashContext):
 #########################
 
 @client.event
-async def on_ready():
-    print(f'{client.user.name} has connected to Discord!')
-
-@client.event
-async def on_member_join(member):
-    print(f'{member.name} has joined the server!')
-    await member.send(f'Hi {member.name}, <#887372328143552572> to our friendly Valorant server!')
-    
-@client.event
 async def on_raw_reaction_add(payload):
     message_id = payload.message_id
-    if message_id == 888372589116928060:
+    channel = client.get_channel(889161628195631114)
+    curr_time = datetime.datetime.now(pytz.timezone('Australia/Sydney'))
+    if message_id == 888767336218238977:
         guild = discord.utils.find(lambda g: g.id==payload.guild_id, client.guilds)
         role_name = payload.emoji.name.capitalize()
         role = discord.utils.get(guild.roles, name=role_name)    
@@ -89,18 +104,18 @@ async def on_raw_reaction_add(payload):
             if member is not None:
                 if member.id != 835802124117475348:
                     await member.add_roles(role)
-                    print(f'{member.name}  added to', role_name)
-                else:
-                    print('ValorantBot reaction for', role_name)
+                    await channel.send(f'{curr_time} - {member} added to {role_name}')
             else:
-                print(f'{member.name}  not found')
+                await channel.send(f'{curr_time} - {member} not found')
         else:
-            print('Role not found')
+            await channel.send(f'{curr_time} - Role not found: {role_name}')
 
 @client.event
 async def on_raw_reaction_remove(payload):
     message_id = payload.message_id
-    if message_id == 888372589116928060:
+    channel = client.get_channel(889161628195631114)
+    curr_time = datetime.datetime.now(pytz.timezone('Australia/Sydney'))
+    if message_id == 888767336218238977:
         guild = discord.utils.find(lambda g: g.id==payload.guild_id, client.guilds)
         role_name = payload.emoji.name.capitalize()
         role = discord.utils.get(guild.roles, name=role_name)    
@@ -108,11 +123,11 @@ async def on_raw_reaction_remove(payload):
             member = discord.utils.find(lambda m: m.id==payload.user_id, guild.members)
             if member is not None:
                 await member.remove_roles(role)
-                print(f'{member.name} removed from', role_name)
+                await channel.send(f'{curr_time} - {member} removed from {role_name}')
             else:
-                print(f'{member.name} not found')
+                await channel.send(f'{curr_time} - {member} not found')
         else:
-            print('Role not found')
+            await channel.send(f'{curr_time} - Role not found')
 
 @commands.has_role('Admin')
 @client.command(hidden=True)
