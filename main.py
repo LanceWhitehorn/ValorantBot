@@ -7,6 +7,7 @@ import random
 from discord.ext import commands
 from dotenv import load_dotenv
 
+
 ##################################
 #     Discord slash commands     #
 ##################################
@@ -15,6 +16,20 @@ from discord_slash import SlashCommand, SlashContext, ComponentContext
 from discord_slash.utils import manage_components
 from discord_slash.utils.manage_components import create_button, create_actionrow
 from discord_slash.model import ButtonStyle
+
+
+#################
+#     Setup     #
+#################
+
+load_dotenv()
+TOKEN = os.getenv('DISCORD_TOKEN')
+
+intents = discord.Intents.default()
+intents.members = True
+
+client = commands.Bot(command_prefix='!', intents=intents)
+slash = SlashCommand(client)
 
 
 ###################
@@ -45,19 +60,6 @@ async def squad(ctx:SlashContext):
             temp.remove(user)
         new_embed = discord.Embed(title='Squad', description=', '.join(temp), color=0xF4F4F4)
         await message.edit(embed=new_embed)
-
-
-#################
-#     Setup     #
-#################
-
-load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
-
-intents = discord.Intents.default()
-intents.members = True
-
-client = commands.Bot(command_prefix='!', intents=intents)
 
 
 #########################
