@@ -3,8 +3,53 @@ import random
 import discord
 import youtube_dl
 import os
+import random
 from discord.ext import commands
 from dotenv import load_dotenv
+
+##################################
+#     Discord slash commands     #
+##################################
+
+from discord_slash import SlashCommand, SlashContext, ComponentContext
+from discord_slash.utils import manage_components
+from discord_slash.utils.manage_components import create_button, create_actionrow
+from discord_slash.model import ButtonStyle
+
+
+###################
+#     Buttons     #
+###################
+
+@client.command(aliases=['s'])
+async def squad(ctx:SlashContext):
+    buttons = [
+        create_button(style=ButtonStyle.green, label='Join', custom_id='join'),
+        create_button(style=ButtonStyle.blue, label='Leave', custom_id='leave')
+    ]
+    action_row = create_actionrow(*buttons)
+    embed = discord.Embed(title='Squad', description=f'{ctx.author.name}', color=0xF4F4F4)
+    message = await ctx.send(embed=embed)
+    await ctx.send(content='Options:', components=[action_row])
+    temp = [ctx.author.name]
+    while True:
+        button_ctx: ComponentContext = await manage_components.wait_for_component(client, components=action_row)
+        await button_ctx.edit_origin(content='Options:')
+        user = button_ctx.author.name
+        if button_ctx.custom_id=='join' and user not in temp:
+            if len(temp) != 1:
+                temp.append(user)
+            else:
+               await ctx.send('Full squad!') 
+        if button_ctx.custom_id=='leave' and user in temp:
+            temp.remove(user)
+        new_embed = discord.Embed(title='Squad', description=', '.join(temp), color=0xF4F4F4)
+        await message.edit(embed=new_embed)
+
+
+#################
+#     Setup     #
+#################
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -65,7 +110,7 @@ async def on_raw_reaction_remove(payload):
         else:
             print('Role not found')
 
-@commands.has_role('Admin')            
+@commands.has_role('Admin')
 @client.command(hidden=True)
 async def agentSelect(ctx):
     message = await ctx.fetch_message('888372589116928060')
