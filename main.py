@@ -1,9 +1,8 @@
-import os
-import random
 import discord
-import youtube_dl
 import os
 import random
+import youtube_dl
+import uuid
 from discord.ext import commands
 from dotenv import load_dotenv
 
@@ -30,6 +29,40 @@ intents.members = True
 
 client = commands.Bot(command_prefix='!', intents=intents)
 slash = SlashCommand(client)
+
+
+#######################
+#     Squad Lobby     #
+#######################
+
+@client.command(aliases=['s'], help='Creates a virtual lobby which people can join and leave')
+async def squad(ctx:SlashContext):
+    id1 = str(uuid.uuid1())
+    id2 = str(uuid.uuid1())
+    buttons = [
+        create_button(style=ButtonStyle.green, label='Join', custom_id='join'+id1),
+        create_button(style=ButtonStyle.blue, label='Leave', custom_id='leave'+id2),
+    ]
+    action_row = create_actionrow(*buttons)
+    embed = discord.Embed(title='Squad', description=f'{ctx.author.name}', color=0xF4F4F4)
+    message = await ctx.send(embed=embed)
+    print(message.id)
+    await ctx.send('Options:', components=[action_row])
+    temp = [ctx.author.name]
+    while len(temp) <= 5:
+        button_ctx: ComponentContext = await manage_components.wait_for_component(client, components=action_row)
+        await button_ctx.edit_origin(content='Options:')
+        user = button_ctx.author.name
+        if button_ctx.custom_id=='join'+id1 and user not in temp:
+            if len(temp) != 5:
+                temp.append(user)
+            else:
+               await ctx.send('Full squad!') 
+        if button_ctx.custom_id=='leave'+id2 and user in temp:
+            temp.remove(user)
+        new_embed = discord.Embed(title='Squad', description=', '.join(temp), color=0xF4F4F4)
+        await message.edit(embed=new_embed)
+
 
 #########################
 #     Role Reaction     #
