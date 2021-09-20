@@ -41,8 +41,8 @@ def time(): # Returns the current time
     curr_time = datetime.datetime.now(pytz.timezone('Australia/Sydney')).strftime('%d/%m/%y %I:%M:%S%p')
     return curr_time
 
-def log(): # Finds the log channel
-    log_channel = discord.utils.get(client.get_all_channels(), name='log')
+def log(): # This is the channel logs
+    log_channel = discord.utils.get(client.get_all_channels(), id=889161628195631114)
     return log_channel
     
 def agents_msg_id(): # This is the message id for agent role reaction
