@@ -33,6 +33,32 @@ client = commands.Bot(command_prefix='!', intents=intents)
 slash = SlashCommand(client)
 
 
+############################
+#     Helper functions     #
+############################
+
+def time(): # Returns the current time
+    curr_time = datetime.datetime.now(pytz.timezone('Australia/Sydney')).strftime('%d/%m/%y %I:%M:%S%p')
+    return curr_time
+
+def log(): # Finds the log channel
+    log_channel = discord.utils.get(client.get_all_channels(), name='log')
+    return log_channel
+    
+def agents_msg_id(): # This is the message id for agent role reaction
+    return 888372589116928060
+    
+# Clears the specified number of messages
+@client.command()
+@commands.has_permissions(administrator=True)
+async def clear(ctx, amount:int=1):
+    await ctx.channel.purge(limit=amount+1)
+@clear.error
+async def clear_error(ctx, error):
+    if isinstance(error, commands.MissingPermissions):
+        await log().send(f'{ctx.author} attempted to use `{ctx.message.content}`')
+
+
 ##################
 #     Events     #
 ##################
@@ -40,18 +66,15 @@ slash = SlashCommand(client)
 @client.event
 async def on_ready():
     print(f'{client.user.name} has connected to Discord!')
-
+    
 @client.event
 async def on_member_join(member):
-    channel = client.get_channel(889161628195631114)
-    curr_time = datetime.datetime.now(pytz.timezone('Australia/Sydney'))
-    await channel.send(f'{curr_time} - {member} has joined the server')
-    await member.send(f'Hi {member.name}, <#887372328143552572> to our friendly Valorant server!')
+    await log().send(f'{time()} - {member} has joined the server: {member.guild}')
+    # await member.send(f'Hi {member.name}, <#887372328143552572> to our friendly Valorant server!')
 
+@client.event
 async def on_member_remove(member):
-    channel = client.get_channel(889161628195631114)
-    curr_time = datetime.datetime.now(pytz.timezone('Australia/Sydney'))
-    await channel.send(str(curr_time) + f' - {member} has left the server')
+    await log().send(f'{curr_time} - {member} has left the server')
 
 
 #######################
@@ -86,36 +109,34 @@ async def squad(ctx:SlashContext):
         await message.edit(embed=new_embed)
 
 
-#########################
-#     Role Reaction     #
-#########################
+###############################
+#     Agent Role Reaction     #
+###############################
 
 @client.event
 async def on_raw_reaction_add(payload):
     message_id = payload.message_id
-    channel = client.get_channel(889161628195631114)
-    curr_time = datetime.datetime.now(pytz.timezone('Australia/Sydney'))
-    if message_id == 888372589116928060:
+    if message_id == agents_msg_id():
         guild = discord.utils.find(lambda g: g.id==payload.guild_id, client.guilds)
         role_name = payload.emoji.name.capitalize()
         role = discord.utils.get(guild.roles, name=role_name)    
         if role is not None:
             member = discord.utils.find(lambda m: m.id==payload.user_id, guild.members)
             if member is not None:
-                if member.id != 835802124117475348:
+                if 'bot' not in member.name.lower():
                     await member.add_roles(role)
-                    await channel.send(f'{curr_time} - {member} added to {role_name}')
+                    await log().send(f'{time()} - {member} added to {role_name}')
+                else:
+                    await log().send(f'{member.name} added the {role_name} reaction')
             else:
-                await channel.send(f'{curr_time} - {member} not found')
+                await log().send(f'{time()} - {member} not found')
         else:
-            await channel.send(f'{curr_time} - Role not found: {role_name}')
+            await log().send(f'{time()} - Role not found: {role_name}')
 
 @client.event
 async def on_raw_reaction_remove(payload):
     message_id = payload.message_id
-    channel = client.get_channel(889161628195631114)
-    curr_time = datetime.datetime.now(pytz.timezone('Australia/Sydney'))
-    if message_id == 888372589116928060:
+    if message_id == agents_msg_id():
         guild = discord.utils.find(lambda g: g.id==payload.guild_id, client.guilds)
         role_name = payload.emoji.name.capitalize()
         role = discord.utils.get(guild.roles, name=role_name)    
@@ -123,16 +144,17 @@ async def on_raw_reaction_remove(payload):
             member = discord.utils.find(lambda m: m.id==payload.user_id, guild.members)
             if member is not None:
                 await member.remove_roles(role)
-                await channel.send(f'{curr_time} - {member} removed from {role_name}')
+                await log().send(f'{time()} - {member} removed from {role_name}')
             else:
-                await channel.send(f'{curr_time} - {member} not found')
+                await log().send(f'{time()} - {member} not found')
         else:
-            await channel.send(f'{curr_time} - Role not found')
+            await log().send(f'{time()} - Role not found: {role_name}')
 
-@commands.has_role('Admin')
 @client.command(hidden=True)
-async def agentSelect(ctx):
-    message = await ctx.fetch_message('888372589116928060')
+@commands.has_permissions(administrator=True)
+async def agentRoles(ctx):
+    message = await ctx.fetch_message(str(agents_msg_id()))
+    await ctx.message.delete()
     emojis = ['astra', 'breach', 'brimstone', 'cypher', 'jett', 'kayo', 'killjoy', 'omen', 'phoenix', 'raze', 'reyna', 'sage', 'skye', 'sova', 'viper', 'yoru']
     guild = discord.utils.find(lambda g: g.id==ctx.guild.id, client.guilds)
     for agent in emojis:
@@ -140,51 +162,11 @@ async def agentSelect(ctx):
         await message.add_reaction(emoji)
 
 
-##########################
-#     Agent Roulette     #
-##########################
-
-@client.command(aliases=['r'], help='(Takes an integer n, default n=1) Randomly selects n agents')
-async def roulette(ctx, number:int=1):
-    if number <= 5:
-        agents = ['astra', 'breach', 'brimstone', 'cypher', 'jett', 'kayo', 'killjoy', 'omen', 'phoenix', 'raze', 'reyna', 'sage', 'skye', 'sova', 'viper', 'yoru']
-        chosen = []
-        while len(chosen) < number:
-            idx = random.randint(0, 15)
-            agent = agents[idx].capitalize()
-            if agent not in chosen:
-                chosen.append(agent)
-        desc = ', '.join(chosen)
-        embed = discord.Embed(title='Agent Roulette', description=desc, color=0xF4F4F4)
-        await ctx.send(embed=embed)
-#       await ctx.send('Agent(s): ' + desc)
-    else:
-        await ctx.send('You can\'t select more than 5 agents!')
-
-
-############################
-#     Agent Main Users     #
-############################
-
-@client.command(help='Lists users that main the specified agent')
-async def mains(ctx, agent:str):
-    agent = agent.capitalize()
-    guild = discord.utils.find(lambda g: g.id==ctx.guild.id, client.guilds)
-    role = discord.utils.get(guild.roles, name=agent)
-    users = []
-    for member in guild.members:
-        if role in member.roles:
-            users.append(member.name)
-    desc = ', '.join(users)
-    embed = discord.Embed(title=agent+' Mains', description=desc, color=0xF4F4F4)
-    await ctx.send(embed=embed)
-
-
 #################
 #     Music     #
 #################  
       
-@client.command(aliases=['p'], help='Play song (only accepts YouTube URLs atm)')
+@client.command(help='Play song (only accepts YouTube URLs atm)')
 async def play(ctx, url : str):
     song_there = os.path.isfile('song.mp3')
     try:
@@ -244,5 +226,46 @@ async def resume(ctx):
 async def stop(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     voice.stop()
+
+
+##########################
+#     Agent Roulette     #
+##########################
+    
+@client.command(aliases=['r'], help='(Takes an integer n) Randomly selects n agents')
+async def roulette(ctx, number:int=1):
+    if number <= 5:
+        agents = ['astra', 'breach', 'brimstone', 'cypher', 'jett', 'kayo', 'killjoy', 'omen', 'phoenix', 'raze', 'reyna', 'sage', 'skye', 'sova', 'viper', 'yoru']
+        chosen = []
+        while len(chosen) < number:
+            idx = random.randint(0, 15)
+            agent = agents[idx].capitalize()
+            if agent not in chosen:
+                chosen.append(agent)
+        desc = ', '.join(chosen)
+        embed = discord.Embed(title='Agents', description=desc, color=0xF4F4F4)
+        await ctx.send(embed=embed)
+#       await ctx.send('Agent(s): ' + desc)
+    else:
+        await ctx.send('You can\'t select more than 5 agents!')
+        
+        
+############################
+#     Agent Main Users     #
+############################
+
+@client.command(help='Lists users that main the specified agent')
+async def mains(ctx, agent:str):
+    agent = agent.capitalize()
+    guild = discord.utils.find(lambda g: g.id==ctx.guild.id, client.guilds)
+    role = discord.utils.get(guild.roles, name=agent)
+    users = []
+    for member in guild.members:
+        if role in member.roles:
+            users.append(member.name)
+    desc = ', '.join(users)
+    embed = discord.Embed(title=agent+' Mains', description=desc, color=0xF4F4F4)
+    await ctx.send(embed=embed)
     
 client.run(TOKEN)
+
