@@ -233,19 +233,13 @@ async def stop(ctx):
 ##########################
     
 @client.command(aliases=['r'], help='(Takes an integer n) Randomly selects n agents')
-async def roulette(ctx, number:int=1):
-    if number <= 5:
+async def roulette(ctx, n:int=1):
+    if n <= 5:
         agents = ['astra', 'breach', 'brimstone', 'cypher', 'jett', 'kayo', 'killjoy', 'omen', 'phoenix', 'raze', 'reyna', 'sage', 'skye', 'sova', 'viper', 'yoru']
-        chosen = []
-        while len(chosen) < number:
-            idx = random.randint(0, 15)
-            agent = agents[idx].capitalize()
-            if agent not in chosen:
-                chosen.append(agent)
+        chosen = random.sample(agents, n)
         desc = ', '.join(chosen)
         embed = discord.Embed(title='Agents', description=desc, color=0xF4F4F4)
         await ctx.send(embed=embed)
-#       await ctx.send('Agent(s): ' + desc)
     else:
         await ctx.send('You can\'t select more than 5 agents!')
         
