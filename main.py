@@ -49,7 +49,7 @@ def agents_msg_id(): # This is the message id for agent role reaction
     return 888372589116928060
     
 # Clears the specified number of messages
-@client.command()
+@client.command(hidden=True)
 @commands.has_permissions(administrator=True)
 async def clear(ctx, amount:int=1):
     await ctx.channel.purge(limit=amount+1)
