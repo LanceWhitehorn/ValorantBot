@@ -70,11 +70,11 @@ async def on_ready():
 @client.event
 async def on_member_join(member):
     await log().send(f'{time()} - {member} has joined the server: {member.guild}')
-    # await member.send(f'Hi {member.name}, <#887372328143552572> to our friendly Valorant server!')
+    await member.send(f'Hi {member.name}, <#887372328143552572> to our friendly Valorant server! From there, feel free to select the agent(s) you main.')
 
 @client.event
 async def on_member_remove(member):
-    await log().send(f'{curr_time} - {member} has left the server')
+    await log().send(f'{time()} - {member} has left the server')
 
 
 #######################
