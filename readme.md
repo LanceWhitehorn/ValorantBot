@@ -1,5 +1,7 @@
 # Valorant Bot
 
+Having picked up Valorant during the COVID lockdown, I decided to create a custom bot for my Valorant Discord server. I coded the bot in Python which I currently continue to host  on Heroku.
+
 ## Features
 | Name | Command | Description
 | :--- | :------ | :----------
